@@ -1,0 +1,6 @@
+{
+    "proxy": "localhost:8888",
+    "directory": "dist",
+    "files": ["dist/**/*.js", "views/**/*.*"],
+    "reloadDelay": 1000
+}
