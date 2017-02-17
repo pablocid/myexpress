@@ -1,11 +1,17 @@
 {
     "compilerOptions": {
-        "target": "es3",
+        "target": "es5",
+        "experimentalDecorators": true,
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
         "sourceMap": false,
-        "outDir": "dist"
+        "outDir": "dist",
+        "lib": [
+            "es5",
+            "es6",
+            "dom"
+        ]
     },
     "include": [
         "src/**/*"

@@ -1,0 +1,8 @@
+{>"pages/basepage" /}
+
+{<content}
+ <h1>HOLLAAA</h1>
+ <h2>{user}</h2>
+ <h3>kjasflkajdklfajlk</h3>
+ <h4>{pepe}</h4>
+{/content}

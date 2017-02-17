@@ -1,8 +1,6 @@
+import { Model } from "mongoose";
+import { IUserModel } from "./user";
 
-class PPP {
-    constructor(){}
-
-    private ss ():boolean{
-        return true;
-    }
+export interface IModel {
+  user: Model<IUserModel>;
 }

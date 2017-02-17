@@ -1,4 +1,4 @@
-import * as bodyParser from "body-parser";
+import { json as Json, urlencoded as Urlencoded } from "body-parser";
 import * as cookieParser from "cookie-parser";
 import * as express from "express";
 import * as logger from "morgan";
@@ -39,9 +39,10 @@ export class Server {
      * @constructor
      */
     constructor() {
+
         //create expressjs application
         this.app = express();
-        
+
         //configure application
         this.config();
 
@@ -70,10 +71,10 @@ export class Server {
      */
     public config() {
         //add static paths
-        this.app.use(express.static(path.join(__dirname, "public")));
+        this.app.use(express.static(path.join(__dirname, "../public")));
 
         //configure dust
-        this.app.engine("dust",dust.engine({useHelpers: true}))
+        this.app.engine("dust", dust.engine({ useHelpers: true }))
 
         //configure pug
         this.app.set("views", path.join(__dirname, "../views"));
@@ -84,14 +85,14 @@ export class Server {
         this.app.use(logger("dev"));
 
         //use json form parser middlware
-        this.app.use(bodyParser.json());
+        this.app.use(Json());
 
         //use query string parser middlware
-        this.app.use(bodyParser.urlencoded({
+        this.app.use(Urlencoded({
             extended: true
         }));
 
-        //use cookie parker middleware middlware
+        //use cookie parser middleware middlware
         this.app.use(cookieParser("SECRET_GOES_HERE"));
 
         //use override middlware
@@ -108,7 +109,7 @@ export class Server {
     }
 
     /**
-     * Create router
+     * Create routerimport mongoose = require("mongoose"); //import mongoose
      *
      * @class Server
      * @method api
