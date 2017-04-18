@@ -1,18 +1,9 @@
-import { IUser } from "../interfaces/user";
-import { IUserModel } from "../models/user";
-import { userSchema } from "../schemas/userSchm";
-
-//use q promises
-global.Promise = require("q").Promise;
-
-//import mongoose
-import mongoose = require("mongoose");
-
+import { IUserModel, IUser } from "./interface";
+import { UserSchema } from "./schema";
+import { Model } from "mongoose";
 import { suite, test } from "mocha-typescript";
-
 import { should } from 'chai';
-
-import { MongoConnection } from '../dbconnection/mongodb'
+import { MongoConnection } from '../../dataconnection/mongodb'
 
 
 @suite
@@ -22,10 +13,10 @@ class UserTest {
     private data: IUser;
 
     //the User model
-    public static User: mongoose.Model<IUserModel>;
+    public static User: Model<IUserModel>;
 
     public static before() {
-        UserTest.User = new MongoConnection('User',userSchema).model;
+        UserTest.User = new MongoConnection('User', UserSchema).model;
 
         //require chai and use should() assertions
         should();

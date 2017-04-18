@@ -7,6 +7,7 @@ initializeApp({
     credential: credential.cert(serviceAccount),
     databaseURL: "https://myexpress-88f9a.firebaseio.com"
 });
+// TODO: Generalizar la conexión
 
 export class FireConnection {
     public db: database.Database;
@@ -17,9 +18,6 @@ export class FireConnection {
 
     getSome() {
         var def = defer();
-        //var ref = this.db.ref("/someshit");
-        //ref.set({ pepe: "pato" })
-
         this.db.ref('someshit/krap').set({
             crap:'popo',
             pi:'pichi'
@@ -27,14 +25,6 @@ export class FireConnection {
             console.log(x);
             def.resolve(x)
         })
-        /*
-        ref.limitToFirst(1).on("child_added", function (snapshot: any) {
-            def.resolve(JSON.stringify(snapshot.key()) );
-            console.log(snapshot.val());
-        });
-        */
-
-//        def.resolve('lsakjdflksjdl')
         return def.promise;
 
     }

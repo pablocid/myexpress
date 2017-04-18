@@ -1,8 +1,15 @@
 
 export class TopBar {
     public title:string;
+    public labels:Object;
     constructor(){
-        this.title = "adfasdfasdf sdfgdsgsdfgsdgfsdfgsdgf";
+        this.title = "Plant Biotech";
+        this.labels = {
+            login:'logearse',
+            languaje:'Lenguaje',
+            lang:['English','Español'],
+            adminArea:'Área de administración'
+        }
 
     }
 

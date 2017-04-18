@@ -1,23 +1,28 @@
 <header class="header stricky">
+	<!-- Button trigger modal -->
+	<button type="button" style="position:absolute;" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#{menuBar.id}_modal">
+		Edit {menuBar.id}
+	</button>
+
 		<div class="auto-container clearfix">
 			<div id="menuzord" class="menuzord">
-				<a href="index.html" class="menuzord-brand"><img src="{menuBar.logo}" alt="PlantBiotec"/></a>
+				<a href="index.html" class="menuzord-brand"><img src="{menuBar.data.logoUrl}" alt="PlantBiotec"/></a>
 
 				<ul class="menuzord-menu">
-					{#menuBar.menu}
+					{#menuBar.data.menu}
 					<li>
 					    <a {?submenu} style="cursor:pointer;" {:else} href="{link}"  {/submenu} >
-					    	{text}
+					    	{label}
 					    </a>
 					    {?submenu}
 					        <ul class="dropdown">
 					            {#submenu}
-					            <li><a href="{link}">{text}</a></li>
+					            <li><a href="{link}">{label}</a></li>
 					            {/submenu}
 					        </ul>
 					    {/submenu}
 					</li>
-					{/menuBar.menu}
+					{/menuBar.data.menu}
 <!--
 					<li>
 						<a href="index.html">{menuBar.item}</a>
@@ -113,3 +118,46 @@
 			</div>
 		</div>
 	</header>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="{menuBar.id}_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{menuBar.id}">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel_{menuBar.id}">Modal title</h4>
+      </div>
+      <div class="modal-body" id="modalFormContainer_{menuBar.id}">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="{menuBar.id}_save_btn">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+	var Brutusin_{menuBar.id} = brutusin["json-forms"];
+	var bf_{menuBar.id} = Brutusin_{menuBar.id}.create({menuBar.schema|js|s});
+	var content_{menuBar.id} = {menuBar.data|js|s};
+    var container_{menuBar.id} = document.getElementById('modalFormContainer_{menuBar.id}');
+
+	bf_{menuBar.id}.render(container_{menuBar.id}, content_{menuBar.id});
+
+	$('#{menuBar.id}_save_btn').on('click', function(){
+		if(bf_{menuBar.id}.validate()){
+			$.ajax({
+			  type: "POST",
+			  url: "{menuBar.postUrl}",
+			  data: {data: bf_{menuBar.id}.getData()},
+			  success: function(){ window.location.reload(); },
+			  error:function(err){ console.log(err); },
+			  dataType: 'json'
+			});
+		}else{ alert('the form is NOT valid'); }
+	});
+
+</script>

@@ -1,7 +1,7 @@
 <section class="footer-top-area">
 	<!-- Button trigger modal -->
-	<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#footer_top_area_modal">
-	Edit this block
+	<button type="button" style="position:absolute;" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#{footerTopArea.id}_modal">
+		Edit {footerTopArea.id}
 	</button>
 
 	<div class="auto-container">
@@ -10,13 +10,13 @@
 	            <!--Start footer-logo  item-->
 	            <div class="footer-logo">
 	               <div class="logo">
-	                    <a href="index.html"><img src="{footerTopArea.logo}" alt="Logo"></a>
+	                    <a href="index.html"><img src="{footerTopArea.data.logo}" alt="Logo"></a>
 	                </div>
-	                <p>{footerTopArea.frase}</p>
+	                <p>{footerTopArea.data.frase}</p>
 	                <div class="social-icon">
-	                	{#footerTopArea.social}
+	                	{#footerTopArea.data.social}
 	                    <a href="{link}"><i class="fa fa-{net}" aria-hidden="true"></i></a>
-	                    {/footerTopArea.social}
+	                    {/footerTopArea.data.social}
 	                </div>
 	            </div>
 	            <!--End footer-logo  item-->
@@ -25,14 +25,14 @@
 	            <!--Start contact-us  item-->
 	            <div class="contact-us">
 	                <h2>Contact Us</h2>
-	                {#footerTopArea.contact}
+	                {#footerTopArea.data.contact}
 	                <h4>{label}</h4>
 	                <p>
 	                {#items}
 	                	{.} {@sep}<br>{/sep}
 	                {/items}
 	                </p>
-	                {/footerTopArea.contact}
+	                {/footerTopArea.data.contact}
 	            </div>
 	            <!--End contact-us  item-->
 	        </div>
@@ -43,9 +43,9 @@
 	                <div class="row">
 	                	<div class="col-sm-6">
 	                		<ul>
-	                		{#footerTopArea.quicklinks}
+	                		{#footerTopArea.data.quicklinks}
 	                			<li><a href="{link}">{label}</a></li>
-	                		{/footerTopArea.quicklinks}
+	                		{/footerTopArea.data.quicklinks}
 	                		</ul>
 	                	</div><!-- 
 	                	<div class="col-sm-6">
@@ -62,12 +62,12 @@
 	        <div class="col-md-3 col-sm-6 col-xs-12">
 	            <!--Start subscribe-us  item-->
 	            <div class="subscribe-us">
-	                <h2>Subscribe to News</h2>
-	                <p>Signup for our mailing list to get latest<br>updates and news.</p>
+	                <h2>{footerTopArea.data.subscribeNews.label}</h2>
+	                <p>{footerTopArea.data.subscribeNews.description}</p>
 	                <div class="email-addres">
-	                    <input type="email" placeholder="Email Address">
+	                    <input type="email" placeholder="{footerTopArea.data.subscribeNews.placeholder}">
 	                    <button type="submit" class="message"><i class="fa fa-envelope-o " aria-hidden="true"></i></button>
-	                    <p>Your Email id is confidential!</p>
+	                    <p>{footerTopArea.data.subscribeNews.consideration}</p>
 	                </div>
 	            </div>
 	            <!--End subscribe-us  item-->
@@ -80,18 +80,18 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="footer_top_area_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="{footerTopArea.id}_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel_{footerTopArea.id}">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+        <h4 class="modal-title" id="myModalLabel_{footerTopArea.id}">Modal title</h4>
       </div>
-      <div class="modal-body" id="modalFormContainer">
+      <div class="modal-body" id="modalFormContainer_{footerTopArea.id}">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="footer_top_area_save_btn">Save changes</button>
+        <button type="button" class="btn btn-primary" id="{footerTopArea.id}_save_btn">Save changes</button>
       </div>
     </div>
   </div>
@@ -99,40 +99,24 @@
 
 
 <script type="text/javascript">
-	var BrutusinForms = brutusin["json-forms"];
+	var Brutusin_{footerTopArea.id} = brutusin["json-forms"];
+	var bf_{footerTopArea.id} = Brutusin_{footerTopArea.id}.create({footerTopArea.schema|js|s});
+	var content_{footerTopArea.id} = {footerTopArea.data|js|s};
+    var container_{footerTopArea.id} = document.getElementById('modalFormContainer_{footerTopArea.id}');
 
-	var bf = BrutusinForms.create({footerTopAreaSchm|js|s});
-	var content = {footerTopArea|js|s};
+	bf_{footerTopArea.id}.render(container_{footerTopArea.id}, content_{footerTopArea.id});
 
-    var container = document.getElementById('modalFormContainer');
-
-	bf.render(container, content);
-
-	$('#footer_top_area_save_btn').on('click', function(){
-		if(bf.validate()){
-			console.log(bf.getData());//{_csrf}
+	$('#{footerTopArea.id}_save_btn').on('click', function(){
+		if(bf_{footerTopArea.id}.validate()){
 			$.ajax({
 			  type: "POST",
-			  url: 'save/footer-top-area',
-			  data: {'_csrf':'{_csrf}',doc: bf.getData()},
-			  success: function(){window.location.reload();},
+			  url: "{footerTopArea.postUrl}",
+			  data: {data: bf_{footerTopArea.id}.getData()},
+			  success: function(){ window.location.reload(); },
+			  error:function(err){ console.log(err); },
 			  dataType: 'json'
 			});
-			/*
-			$.post('save/footer-top-area', bf.getData(), function(){
-				$('#footer_top_area_modal').modal('hide');
-				window.location.reload();
-			})
-*/
-		}else{
-			alert('the form is NOT valid');
-		}
-		
+		}else{ alert('the form is NOT valid'); }
 	});
-
-    $('#footer_top_area_modal').on('shown.bs.modal', function () {
-    	
-	  $('#myInput').focus()
-	})
 
 </script>

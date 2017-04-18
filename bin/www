@@ -2,13 +2,27 @@
 
 "use strict";
 
+// local enviroment variables
+try {
+    if (process.env.NODE_ENV === 'development') {
+        var localenv = require('../config/local.env');
+        for (var env in localenv) {
+            process.env[env] = localenv[env];
+        }
+    }
+} catch (e) {
+    console.log('default options');
+}
+
+
+var conf = require('../config/enviroment');
 //module dependencies
 var server = require("../dist/server");
 var debug = require("debug")("express:server");
 var http = require("http");
 
 //create http server
-var httpPort = normalizePort(process.env.PORT || 8000);
+var httpPort = normalizePort(conf.port);
 var app = server.Server.bootstrap().app;
 app.set("port", httpPort);
 var httpServer = http.createServer(app);

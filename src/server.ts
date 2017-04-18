@@ -6,10 +6,11 @@ import * as path from "path";
 import * as errorHandler from "errorhandler";
 import * as methodOverride from "method-override";
 
-import { IndexRoute } from "./routes/index";
+import { LandingRoute, UserRoute, DataPartialRoute } from './routes';
 
 var dust = require('express-dustjs')
 
+var conf = require('../config/enviroment');
 
 /**
  * The server.
@@ -60,7 +61,7 @@ export class Server {
      * @method api
      */
     public api() {
-        //empty for now
+        this.app.use('/api/partials', DataPartialRoute.route);
     }
 
     /**
@@ -88,12 +89,10 @@ export class Server {
         this.app.use(Json());
 
         //use query string parser middlware
-        this.app.use(Urlencoded({
-            extended: true
-        }));
+        this.app.use(Urlencoded({ extended: true }));
 
         //use cookie parser middleware middlware
-        this.app.use(cookieParser("SECRET_GOES_HERE"));
+        this.app.use(cookieParser(conf.secrets.cookieParser));
 
         //use override middlware
         this.app.use(methodOverride());
@@ -106,22 +105,23 @@ export class Server {
 
         //error handling
         this.app.use(errorHandler());
+
+        //CORS ???
+        /*
+        this.app.use(function (req: express.Request, res: express.Response, next: express.NextFunction) {
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+            next();
+        });
+        */
     }
 
     /**
-     * Create routerimport mongoose = require("mongoose"); //import mongoose
      *
      * @class Server
-     * @method api
+     * @method routes
      */
     public routes() {
-        let router: express.Router;
-        router = express.Router();
-
-        //IndexRoute
-        IndexRoute.create(router);
-
-        //use router middleware
-        this.app.use(router);
+        this.app.use('/', LandingRoute.route);
     }
 }
