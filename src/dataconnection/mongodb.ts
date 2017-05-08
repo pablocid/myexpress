@@ -9,15 +9,12 @@ export class MongoConnection{
     public model: Model<Document>;
 
     constructor(name:string, schm:Schema){
-        this.MConnOptions = {
-            
-        }
+        this.MConnOptions = {}
         //use q promises
         global.Promise = require("q").Promise;
         //use q library for mongoose promise
         mongoose.Promise = global.Promise;
         this._connection =  createConnection(MongoConnection.STRING_CONNECTION);
         this.model = this._connection.model(name, schm);
-
     }
 }

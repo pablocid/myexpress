@@ -66,7 +66,7 @@ export class LandingRoute extends BaseRoute {
         //set custom title
         this.title = "Home | MyExpress";
         var self = this;
-        async function ASYNC() {
+        (async () => {
             try {
                 let model:any = {};
                model = await self._dataPartials();
@@ -79,8 +79,8 @@ export class LandingRoute extends BaseRoute {
                 console.error(e.message);
                 res.json(e);
             }
-        }
-        ASYNC();
+        })();
+        //ASYNC();
     }
 
     private _dataPartials():Q.Promise<any>{

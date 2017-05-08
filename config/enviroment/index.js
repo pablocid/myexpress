@@ -16,8 +16,12 @@ var all = {
     // Secret for session, you will want to change this and make it an environment variable
     secrets: {
         session: process.env.SECRET_SESSION || '',
-        cookieParser: process.env.COOKIEPARSER || 'SECRET_GOES_HERE'
+        cookieParser: process.env.COOKIEPARSER || '',
+        app: process.env.APP_SECRET || ''
     },
+
+    //base de datos a utilizar
+    database: process.env.DATABASE || 'mongodb',
 
     // MongoDB connection options
     mongo: {

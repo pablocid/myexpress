@@ -16,6 +16,9 @@ export class UserController {
     return this.userModel.findOne({ _id: id });
   }
   getUserByFirstName(value: string) {
-    return this.userModel.findOne({ firstName: value })
+    return this.userModel.findOne({ firstName: value });
+  }
+  getUserByEmail(value: string) {
+    return this.userModel.findOne({ email: value });
   }
 }
