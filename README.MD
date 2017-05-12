@@ -25,3 +25,4 @@
 - AWS_SECRET_ACCESS_KEY
 - DEBUG
 - MONGODB_LOCAL
+- APP_SECRET: utilizado para firmar jwt

@@ -1,11 +1,10 @@
 import { BaseRoute } from '../../models/class.route'
 import { NextFunction, Request, Response, Router } from 'express';
-import { FileSysConnection } from '../../dataconnection/filesys';
 import * as Passport from 'passport';
-
-import { ExtractJwt, Strategy as JWTStrategy, StrategyOptions } from 'passport-jwt';
-import { sign as Sign, SignOptions } from 'jsonwebtoken';
-
+import { PassportConf } from './passportConf';
+import { Handler } from 'express';
+import { UserController } from '../users';
+import { hash as Hash, hashSync as HashSync, compareSync as CompareSync, compare as Compare } from 'bcrypt';
 const _ = require('lodash');
 const conf = require('../../../config/enviroment');
 
@@ -13,11 +12,12 @@ export class AuthService extends BaseRoute {
     /**
      * Create the routes.
      *
-     * @class DataPartialRoute
+     * @class AuthService
      * @method route
      * @static
      */
     public static get route() {
+
         let r = Router();
         var obj = new AuthService();
 
@@ -33,44 +33,86 @@ export class AuthService extends BaseRoute {
             res.json({ message: "ok", req: req.user, isAut: req.isAuthenticated() });
         });
 
-         r.get("/logout", (req: Request, res: Response, next: NextFunction) => {
+        r.get("/logout", (req: Request, res: Response, next: NextFunction) => {
             let bef = req.isAuthenticated();
             req.logout();
-            res.json({message:'Succesfully logout', isAuth:req.isAuthenticated(), isBefore:bef})
+            res.json({ message: 'Succesfully logout', isAuth: req.isAuthenticated(), isBefore: bef })
         });
 
         return r;
     }
 
+    public static isAuth(role?: string): Handler {
+        if (!role) role = 'guest';
+
+        return (req: Request, res: Response, next: NextFunction) => {
+            if (req.isAuthenticated() && AuthService.isRole(role, req.user.role))
+                return next();
+
+            res.status(401).json({ message: 'no auth' });
+
+        }
+    }
+
+    public static isAuthJWT(role?: string): Handler {
+        if (!role) role = 'guest';
+        //console.log('isAuhJWT');
+        let opt: Passport.AuthenticateOptions = {};
+        opt.session = false;
+
+        return (req: Request, res: Response, next: NextFunction) => {
+            Passport.authenticate('jwt', opt, (nose: any, user: any, info: any, status: any) => {
+                //console.log(nose, user, info, status);
+                if (user && AuthService.isRole(role, user.role)) {
+                    req.user = user;
+                    return next();
+                }
+
+                res.status(401).json({ message: info ? info.message : 'no auth' });
+            })(req, res, next);
+        }
+
+    }
+
+    public static roles: string[] = ['guest', 'user', 'editor', 'admin'];
+
+    private static isRole(role: string, userRole: string): boolean {
+        let ri = AuthService.roles.indexOf(role);
+        let uri = AuthService.roles.indexOf(userRole);
+
+        if (!role || ri === -1) return false;
+        if (!userRole || uri === -1) return false;
+
+        if (uri >= ri) return true;
+        else return false;
+    }
+
+    public static comparePasswords(candidate: string, hash: string): Promise<boolean> {
+        return Compare(candidate, hash);
+    }
+
+    public static hashPassword(password: string): Promise<string> {
+        return Hash(password, 10);
+    }
+
     public users: any[];
+    public userCtrl: UserController;
 
     /**
      * Constructor
      *
-     * @class DataPartialRoute
+     * @class AuthService
      * @constructor
      */
 
     constructor() {
         super();
-
-        this.users = [
-            {
-                id: 1,
-                name: 'jonathanmh',
-                password: '%2yx4'
-            },
-            {
-                id: 2,
-                name: 'test',
-                password: 'test'
-            }
-        ];
+        this.userCtrl = new UserController();
     }
 
     /**
      *
-     * @class DataPartialRoute
+     * @class AuthService
      * @method index
      * @param req {Request} The express Request object.
      * @param res {Response} The express Response object.
@@ -83,59 +125,38 @@ export class AuthService extends BaseRoute {
 
     /**
      *
-     * @class DataPartialRoute
-     * @method index
+     * @class AuthService
+     * @method login
+     * @description login for jwt
      * @param req {Request} The express Request object.
      * @param res {Response} The express Response object.
      * @next {NextFunction} Execute the next method.
      */
     public login(req: Request, res: Response, next: NextFunction) {
-        //lista de los routes disponibles
-        if (req.body.name && req.body.password) {
-            var name = req.body.name;
-            var password = req.body.password;
-        } else {
+        const name = req.body.username;
+        const password = req.body.password;
+        if (!req.body.username || !req.body.password) {
             res.status(401).json({ message: 'no name or password set', isAuth: req.isAuthenticated() });
             return;
         }
-        // usually this would be a database call:
-        var user = this.users[_.findIndex(this.users, { name: name })];
-        if (!user) {
-            res.status(401).json({ message: "no such user found" });
-            return;
-        }
 
-        if (user.password === req.body.password) {
-            // from now on we'll identify the user by the id and the id is the only personalized value that goes into our token
-            var payload = { id: user.id, role: 'admin' };
-            let signOpts: SignOptions = {};
-            signOpts.expiresIn = '3h';
-            var token = Sign(payload, conf.secrets.app, signOpts);
-            res.json({ message: "ok", token: token, isAuth: req.isAuthenticated() });
-            return;
-        } else {
-            res.status(401).json({ message: "passwords did not match", isAuth: req.isAuthenticated() });
-            return;
-        }
+        this.userCtrl.getUserByEmail(name)
+            .then(u => {
+                if (!u._id) throw "username did not match";
+                return AuthService.comparePasswords(password, u.password)
+                    .then(match => {
+                        return { u, match };
+                    })
+            })
+            .then(r => {
+                if (!r.match) throw "passwords did not match";
+                var token = PassportConf.SignJWT(r.u.payload());
+                res.json({ message: "ok", token: token, isAuth: req.isAuthenticated() });
+
+            }).catch(e => {
+                res.status(400).json({ message: e });
+            });
     }
 
-
-    /**
-     *
-     * @class DataPartialRoute
-     * @method partial
-     * @param req {Request} The express Request object.
-     * @param res {Response} The express Response object.
-     * @next {NextFunction} Execute the next method.
-     */
-    public partial(req: Request, res: Response, next: NextFunction) {
-
-    }
-
-    private _isAuthenticated(req: Request, res: Response, next: NextFunction) {
-        if (req.isAuthenticated())
-            return next();
-        res.redirect('/noauth');
-    }
 
 }
