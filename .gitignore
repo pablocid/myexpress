@@ -5,3 +5,5 @@ documentation/
 .env
 uploads/*
 .vscode
+firekey.json
+npm-debug.log

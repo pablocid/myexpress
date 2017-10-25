@@ -4,12 +4,12 @@
 
 // local enviroment variables
 try {
-    if (process.env.NODE_ENV === 'development') {
-        var localenv = require('../config/local.env');
-        for (var env in localenv) {
-            process.env[env] = localenv[env];
-        }
+    //if (process.env.NODE_ENV === 'development') {
+    var localenv = require('../config/local.env');
+    for (var env in localenv) {
+        process.env[env] = localenv[env];
     }
+    //}
 } catch (e) {
     console.log('default options');
 }

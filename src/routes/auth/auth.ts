@@ -118,7 +118,7 @@ export class AuthService extends BaseRoute {
      * @param res {Response} The express Response object.
      * @next {NextFunction} Execute the next method.
      */
-    public index(req: Request, res: Response, next: NextFunction) {
+    public index(req: Request, res: Response, next: NextFunction): void {
         //lista de los routes disponibles
         res.json({ lista: [1, 2, 3, 4, 5] });
     }
@@ -132,7 +132,7 @@ export class AuthService extends BaseRoute {
      * @param res {Response} The express Response object.
      * @next {NextFunction} Execute the next method.
      */
-    public login(req: Request, res: Response, next: NextFunction) {
+    public login(req: Request, res: Response, next: NextFunction): void {
         const name = req.body.username;
         const password = req.body.password;
         if (!req.body.username || !req.body.password) {

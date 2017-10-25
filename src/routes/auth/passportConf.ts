@@ -25,6 +25,7 @@ export class PassportConf {
     }
 
     private userCtrl: UserController;
+    
     constructor() {
         this.userCtrl = new UserController();
     }
