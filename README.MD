@@ -1,4 +1,4 @@
-# Express Custom Seed Pablo CID
+# Express TypeScript Custom Seed Pablo CID
 
 ## Cableado
 
